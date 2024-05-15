@@ -299,3 +299,299 @@ function createFile(name) {
 function createTempFile(name) {
   createFile(`./temp/${name}`);
 }
+
+/**
+ * Avoid side effects part 1
+ */
+
+// Good
+function splitIntoFirstAndLastName(name) {
+  return name.split(" ");
+}
+
+const name = "Rasel Hasan";
+const newName = splitIntoFirstAndLastName(name);
+
+console.log(name); // 'Rasel Hasan'
+console.log(newName); // ['Rasel', 'Hasan']
+
+/**
+ * Avoid side effects part 2
+ */
+
+// Bad
+const addItemToCart = (cart, item) => {
+  cart.push({ item, date: Date.now() });
+};
+
+// Good
+const addItemToCart = (cart, item) => {
+  return [...cart, { item, date: Date.now() }];
+};
+
+/**
+ * Don't write to global functions
+ */
+
+// Bad
+Array.prototype.diff = function diff(comparisonArray) {
+  const hash = new Set(comparisonArray);
+  return this.filter((elem) => !hash.has(elem));
+};
+
+// Good
+class SuperArray extends Array {
+  diff(comparisonArray) {
+    const hash = new Set(comparisonArray);
+    return this.filter((elem) => !hash.has(elem));
+  }
+}
+
+/**
+ * Favor functional programming over imperative programming
+ */
+
+// Good
+const programmerOutput = [
+  {
+    name: "Uncle Bobby",
+    linesOfCode: 500,
+  },
+  {
+    name: "Suzie Q",
+    linesOfCode: 1500,
+  },
+  {
+    name: "Jimmy Gosling",
+    linesOfCode: 150,
+  },
+  {
+    name: "Gracie Hopper",
+    linesOfCode: 1000,
+  },
+];
+
+const totalOutput = programmerOutput.reduce(
+  (totalLines, output) => totalLines + output.linesOfCode,
+  0
+);
+
+/**
+ * Encapsulate conditionals
+ */
+
+// Bad
+if (fsm.state === "fetching" && isEmpty(listNode)) {
+  // ...
+}
+
+// Good
+function shouldShowSpinner(fsm, listNode) {
+  return fsm.state === "fetching" && isEmpty(listNode);
+}
+
+if (shouldShowSpinner(fsmInstance, listNodeInstance)) {
+  // ...
+}
+
+/**
+ * Avoid negative conditionals
+ */
+
+// Bad
+function isDOMNodeNotPresent(node) {
+  // ...
+}
+
+if (!isDOMNodeNotPresent(node)) {
+  // ...
+}
+
+// Good
+function isDOMNodePresent(node) {
+  // ...
+}
+
+if (isDOMNodePresent(node)) {
+  // ...
+}
+
+/**
+ * Avoid conditionals
+ */
+
+// Bad
+class Airplane {
+  // ...
+  getCruisingAltitude() {
+    switch (this.type) {
+      case "777":
+        return this.getMaxAltitude() - this.getPassengerCount();
+      case "Air Force One":
+        return this.getMaxAltitude();
+      case "Cessna":
+        return this.getMaxAltitude() - this.getFuelExpenditure();
+    }
+  }
+}
+
+// Good
+class Airplane {
+  // ...
+}
+
+class Boeing777 extends Airplane {
+  // ...
+  getCruisingAltitude() {
+    return this.getMaxAltitude() - this.getPassengerCount();
+  }
+}
+
+class AirForceOne extends Airplane {
+  // ...
+  getCruisingAltitude() {
+    return this.getMaxAltitude();
+  }
+}
+
+class Cessna extends Airplane {
+  // ...
+  getCruisingAltitude() {
+    return this.getMaxAltitude() - this.getFuelExpenditure();
+  }
+}
+
+/**
+ * Avoid type-checking part-01
+ */
+
+// Bad
+function travelToTexas(vehicle) {
+  if (vehicle instanceof Bicycle) {
+    vehicle.pedal(this.currentLocation, new Location("texas"));
+  } else {
+    vehicle.drive(this.currentLocation, new Location("texas"));
+  }
+}
+
+// Good
+function travelToTexas(vehicle) {
+  vehicle.move(this.currentLocation, new Location("texas"));
+}
+
+/**
+ * Avoid type checking part-02
+ */
+
+// Bad
+function combine(val1, val2) {
+  if (
+    (typeof val1 === "number" && typeof val2 === "number") ||
+    (typeof val1 === "string" && typeof val2 === "string")
+  ) {
+    return val1 + val2;
+  } else {
+    throw new Error("Must be of type string or number");
+  }
+}
+
+// Good
+function combine(val1, val2) {
+  return val1 + val2;
+}
+
+/**
+ * Don't over-optimize
+ */
+
+// Bad
+for (let i = 0, len = list.length; i < len; i++) {
+  // ...
+}
+
+// Good
+for (let i = 0; i < list.length; i++) {
+  // ...
+}
+
+/**
+ * Use getter and setter
+ */
+
+// Good
+function makeBankAccount() {
+  // this one is private
+  let balance = 0;
+
+  // a 'getter', made public via the returned object below
+  function getBalance() {
+    return balance;
+  }
+
+  // a 'setter', made public via the returned object below
+  function setBalance(amount) {
+    // ... validate before updating the balance
+    balance = amount;
+  }
+
+  return {
+    // ...
+    getBalance,
+    setBalance,
+  };
+}
+
+/**
+ * Make objects have private members
+ */
+
+// Good
+function makeEmployee(name) {
+  return {
+    getName() {
+      return name;
+    },
+  };
+}
+
+const employee = makeEmployee("John Doe");
+console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
+delete employee.name;
+console.log(`Employee name: ${employee.getName()}`); // Employee name: John Doe
+
+/**
+ * Prefer es2015/es6 classes over es5 plain functions
+ */
+
+// Good
+class Animal {
+  constructor(age) {
+    this.age = age;
+  }
+
+  move() {
+    // ...
+  }
+}
+
+class Mammal extends Animal {
+  constructor(age, furColor) {
+    super(age);
+    this.furColor = furColor;
+  }
+
+  liveBirth() {
+    // ...
+  }
+}
+
+class Human extends Mammal {
+  constructor(age, furColor, languageSpoken) {
+    super(age, furColor);
+    this.languageSpoken = languageSpoken;
+  }
+
+  speak() {
+    // ...
+  }
+}
